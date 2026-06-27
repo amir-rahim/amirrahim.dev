@@ -14,20 +14,35 @@ const featuredProjects = (await getCollection('projects'))
 	.filter((p) => !p.data.draft && p.data.featured)
 	.sort((a, b) => a.data.order - b.data.order)
 	.slice(0, 4);
+
+/* EDIT: update these focus areas to match your actual expertise */
+const focuses = [
+	{
+		num: '01',
+		title: 'Platform Engineering',
+		desc: 'Building reliable infrastructure and internal developer platforms — Kubernetes, CI/CD pipelines, and the tooling that lets teams ship with confidence.',
+	},
+	{
+		num: '02',
+		title: 'Technical Leadership',
+		desc: 'Bridging engineering and product — defining roadmaps, running technical discovery, and moving cross-functional teams from ambiguity to delivery.',
+	},
+	{
+		num: '03',
+		title: 'Developer Experience',
+		desc: 'Reducing friction in the development loop. Better tooling, observability, and documentation so engineers can focus on problems that matter.',
+	},
+];
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
 
-	<!--
-		Hero is 200vh tall. The inner panel is sticky so it pins to the
-		top while you scroll through, then releases when you reach the
-		content below.
-	-->
+	<!-- ── Hero — 200vh tall, inner panel is sticky ─────────────────── -->
 	<section class="hero" id="hero" aria-label="Introduction">
 		<canvas id="hero-canvas" class="hero-canvas" aria-hidden="true"></canvas>
 
 		<div class="hero-sticky">
-			<!-- Progress bar — fills left→right as you scroll through the hero -->
+			<!-- Swiss progress bar -->
 			<div class="hero-progress" aria-hidden="true">
 				<div class="hero-progress-bar" id="hero-progress-bar"></div>
 			</div>
@@ -39,23 +54,13 @@ const featuredProjects = (await getCollection('projects'))
 
 				<div class="hero-actions">
 					<a href="/resume" class="btn">View Resume</a>
-					<a
-						href={SITE.social.github}
-						class="btn"
-						target="_blank"
-						rel="noopener noreferrer"
-					>GitHub &nearr;</a>
-					<a
-						href={SITE.social.linkedin}
-						class="btn"
-						target="_blank"
-						rel="noopener noreferrer"
-					>LinkedIn &nearr;</a>
+					<a href={SITE.social.github} class="btn" target="_blank" rel="noopener noreferrer">GitHub &nearr;</a>
+					<a href={SITE.social.linkedin} class="btn" target="_blank" rel="noopener noreferrer">LinkedIn &nearr;</a>
 					<a href={`mailto:${SITE.social.email}`} class="btn">Email</a>
 				</div>
 			</div>
 
-			<!-- Scroll hint — fades once scrolling starts -->
+			<!-- Scroll hint — centred, fades once scrolling begins -->
 			<div class="scroll-hint" id="scroll-hint" aria-hidden="true">
 				<div class="scroll-line"></div>
 				<span class="label">Scroll</span>
@@ -63,7 +68,31 @@ const featuredProjects = (await getCollection('projects'))
 		</div>
 	</section>
 
-	<!-- Content rows sit below the 200vh hero -->
+	<!-- ── Focus / about section ─────────────────────────────────────── -->
+	<section class="focus-section page-wrap" aria-label="Focus areas">
+
+		<div class="focus-intro reveal">
+			<p class="label focus-eyebrow">Focus</p>
+			<p class="focus-summary">
+				Graduate engineer at UBS rotating across infrastructure and platform engineering —
+				moving toward technical leadership through systems thinking, developer tooling,
+				and building things that last.
+			</p>
+		</div>
+
+		<div class="focus-grid">
+			{focuses.map((f, i) => (
+				<div class="focus-item reveal" style={`transition-delay: ${i * 90}ms`}>
+					<span class="label focus-num">{f.num}</span>
+					<h3 class="focus-title">{f.title}</h3>
+					<p class="focus-desc">{f.desc}</p>
+				</div>
+			))}
+		</div>
+
+	</section>
+
+	<!-- ── Projects + Blog ───────────────────────────────────────────── -->
 	<div class="page-wrap">
 		<div class="doc-rows">
 
@@ -113,13 +142,13 @@ const featuredProjects = (await getCollection('projects'))
 </BaseLayout>
 
 <style>
-	/* ── Hero shell — tall so there's scroll room ── */
+	/* ── Hero shell ── */
 	.hero {
 		position: relative;
 		min-height: 200vh;
 	}
 
-	/* ── Sticky panel — stays pinned while scrolling through hero ── */
+	/* ── Sticky panel ── */
 	.hero-sticky {
 		position: sticky;
 		top: 0;
@@ -130,7 +159,6 @@ const featuredProjects = (await getCollection('projects'))
 		border-bottom: 0.5px solid var(--color-rule);
 	}
 
-	/* ── Canvas fills the sticky panel ── */
 	.hero-canvas {
 		position: absolute;
 		inset: 0;
@@ -139,7 +167,6 @@ const featuredProjects = (await getCollection('projects'))
 		display: block;
 	}
 
-	/* ── Text content — left-anchored ── */
 	.hero-inner {
 		position: relative;
 		z-index: 1;
@@ -167,7 +194,7 @@ const featuredProjects = (await getCollection('projects'))
 		gap: var(--space-sm);
 	}
 
-	/* ── Swiss progress bar ── */
+	/* ── Progress bar ── */
 	.hero-progress {
 		position: absolute;
 		bottom: 0;
@@ -184,43 +211,108 @@ const featuredProjects = (await getCollection('projects'))
 		background: var(--color-rule-heavy);
 	}
 
-	/* ── Scroll hint ── */
+	/* ── Scroll hint — centred at bottom ── */
 	.scroll-hint {
 		position: absolute;
 		bottom: var(--space-xl);
-		left: var(--gutter-side);
+		left: 50%;
+		transform: translateX(-50%);
 		z-index: 2;
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		gap: var(--space-sm);
 		transition: opacity 300ms ease;
+		white-space: nowrap;
 	}
 
+	.scroll-hint .label { color: var(--color-text-muted); }
+
 	.scroll-line {
-		width: 32px;
-		height: 0.5px;
-		background: var(--color-text-muted);
+		width: 1px;
+		height: 32px;
+		background: var(--color-rule);
 		position: relative;
 		overflow: hidden;
 	}
 
-	/* Animated fill on the scroll line */
 	.scroll-line::after {
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: var(--color-text);
-		transform: translateX(-100%);
-		animation: scan 1.6s ease-in-out infinite;
+		background: var(--color-rule-heavy);
+		transform: translateY(-100%);
+		animation: scan-down 1.8s ease-in-out infinite;
 	}
 
-	@keyframes scan {
-		0%   { transform: translateX(-100%); }
-		50%  { transform: translateX(0%); }
-		100% { transform: translateX(100%); }
+	@keyframes scan-down {
+		0%   { transform: translateY(-100%); }
+		50%  { transform: translateY(0%); }
+		100% { transform: translateY(100%); }
 	}
 
-	.scroll-hint .label { color: var(--color-text-muted); }
+	/* ── Focus section ── */
+	.focus-section {
+		padding-top: var(--space-3xl);
+		padding-bottom: var(--space-3xl);
+		border-bottom: 0.5px solid var(--color-rule);
+	}
+
+	.focus-intro {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: var(--space-xl);
+		align-items: start;
+		margin-bottom: var(--space-2xl);
+		padding-bottom: var(--space-xl);
+		border-bottom: 0.5px solid var(--color-rule);
+	}
+
+	.focus-eyebrow {
+		padding-top: 0.2em;
+	}
+
+	.focus-summary {
+		font-size: 1.0625rem;
+		color: var(--color-text-secondary);
+		line-height: 1.65;
+		max-width: 58ch;
+	}
+
+	.focus-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0;
+		border-top: 0.5px solid var(--color-rule);
+		border-left: 0.5px solid var(--color-rule);
+	}
+
+	.focus-item {
+		border-right: 0.5px solid var(--color-rule);
+		border-bottom: 0.5px solid var(--color-rule);
+		padding: var(--space-xl);
+	}
+
+	.focus-num {
+		display: block;
+		margin-bottom: var(--space-lg);
+		color: var(--color-text-faint);
+	}
+
+	.focus-title {
+		font-size: var(--text-heading);
+		font-weight: var(--weight-medium);
+		color: var(--color-text);
+		margin-bottom: var(--space-md);
+		letter-spacing: -0.01em;
+	}
+
+	.focus-desc {
+		font-size: var(--text-body);
+		color: var(--color-text-muted);
+		line-height: 1.65;
+		max-width: none;
+	}
 
 	/* ── Section chrome ── */
 	.section-head { margin-bottom: var(--space-md); }
@@ -262,8 +354,10 @@ const featuredProjects = (await getCollection('projects'))
 	/* ── Posts list ── */
 	.posts-list { border-top: 0.5px solid var(--color-rule); }
 
-	@media (max-width: 600px) {
-		.project-grid { grid-template-columns: 1fr; }
+	@media (max-width: 700px) {
+		.focus-grid    { grid-template-columns: 1fr; }
+		.focus-intro   { grid-template-columns: 1fr; gap: var(--space-md); }
+		.project-grid  { grid-template-columns: 1fr; }
 	}
 
 	@media (prefers-reduced-motion: reduce) {
@@ -290,20 +384,13 @@ const featuredProjects = (await getCollection('projects'))
 			const scrolled   = Math.max(0, -rect.top);
 			const progress   = scrollable > 0 ? Math.min(1, scrolled / scrollable) : 0;
 
-			/* Store for canvas to read */
 			(window as any).__heroProgress = progress;
 
-			/* Progress bar */
 			if (progressBar) progressBar.style.width = `${progress * 100}%`;
-
-			/* Scroll hint fades once you start */
-			if (scrollHint) {
-				scrollHint.style.opacity = progress < 0.04 ? '1' : '0';
-			}
+			if (scrollHint)  scrollHint.style.opacity = progress < 0.04 ? '1' : '0';
 
 			if (reduced) return;
 
-			/* Text fades + lifts in the second half of the scroll range */
 			if (progress > 0.45) {
 				const t    = (progress - 0.45) / 0.55;
 				const ease = easeIn(Math.min(1, t));
@@ -335,15 +422,22 @@ const featuredProjects = (await getCollection('projects'))
 		if (!canvas) return;
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
-
 		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
 		const CELL      = 18;
 		const CHARS     = ['0','1','0','1','0','1','+','·','×','-','0','1'];
 		const BASE_FILL = 0.04;
-		const MAX_OP    = 0.14;
 		const FPS       = 22;
 		const INTERVAL  = 1000 / FPS;
+
+		/* Light mode needs much higher opacity — dark chars on pale bg need
+		   ~3× more alpha to register at the same perceived brightness        */
+		function getMaxOpacity(): number {
+			const theme      = document.documentElement.dataset.theme;
+			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+			const isDark     = theme === 'dark' || (!theme && prefersDark);
+			return isDark ? 0.20 : 0.55;
+		}
 
 		interface Cell {
 			x: number; y: number;
@@ -388,19 +482,17 @@ const featuredProjects = (await getCollection('projects'))
 		}
 
 		function tickCells() {
-			/* Density grows as hero scroll progress increases */
 			const progress    = (window as any).__heroProgress ?? 0;
-			const densityMult = 1 + progress * 5;  /* up to 6× denser at full scroll */
+			const densityMult = 1 + progress * 5;
 			const fillTarget  = BASE_FILL * densityMult;
 			const wantActive  = Math.ceil(cells.length * fillTarget);
+			const maxOp       = getMaxOpacity();
 
 			for (const cell of cells) {
-				/* Lerp toward target */
 				cell.opacity += (cell.target - cell.opacity) * cell.speed;
 
 				if (cell.ticksLeft > 0) { cell.ticksLeft--; continue; }
 
-				/* Settle, schedule next state */
 				cell.opacity = cell.target;
 
 				if (cell.target > 0) {
@@ -408,7 +500,7 @@ const featuredProjects = (await getCollection('projects'))
 					cell.ticksLeft = Math.floor(FPS * (1 + Math.random() * 6));
 				} else {
 					if (Math.random() < wantActive / cells.length) {
-						cell.target    = MAX_OP * (0.25 + Math.random() * 0.75);
+						cell.target    = maxOp * (0.25 + Math.random() * 0.75);
 						cell.char      = CHARS[Math.floor(Math.random() * CHARS.length)];
 						cell.ticksLeft = Math.floor(FPS * (0.4 + Math.random() * 2));
 					} else {
