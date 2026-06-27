@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+const posts = (await getCollection('blog'))
+	.filter((p) => !p.data.draft)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Collect all unique tags
+const allTags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
+---
+
+<BaseLayout
+	title="Blog"
+	description="Writing on software engineering, system design, and engineering leadership."
+>
+	<div class="container">
+		<header class="page-header reveal">
+			<span class="page-label">Writing</span>
+			<h1>Blog</h1>
+			<p class="page-desc">
+				Thoughts on software engineering, system design, and building teams.
+			</p>
+
+			{allTags.length > 0 && (
+				<div class="tag-filter">
+					<span class="filter-label">Topics:</span>
+					{allTags.map((tag) => (
+						<span class="tag">{tag}</span>
+					))}
+				</div>
+			)}
+		</header>
+
+		<div class="posts-grid stagger">
+			{posts.map((post, i) => (
+				<BlogCard post={post} featured={i === 0} />
+			))}
+		</div>
+
+		{posts.length === 0 && (
+			<p class="empty-state">No posts yet — check back soon.</p>
+		)}
+	</div>
+</BaseLayout>
+
+<style>
+	.page-header {
+		padding-top: var(--space-2xl);
+		padding-bottom: var(--space-xl);
+		max-width: 600px;
+	}
+
+	.page-label {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		font-weight: 500;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-accent);
+		display: block;
+		margin-bottom: 0.5em;
+	}
+
+	.page-desc {
+		font-size: 1.05rem;
+		color: var(--color-text-muted);
+		margin-top: var(--space-sm);
+		line-height: 1.7;
+		max-width: none;
+	}
+
+	.tag-filter {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.4em;
+		margin-top: var(--space-lg);
+	}
+
+	.filter-label {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: var(--color-text-faint);
+		letter-spacing: 0.04em;
+		margin-right: 0.25em;
+	}
+
+	.posts-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+		gap: var(--space-lg);
+		padding-bottom: var(--space-3xl);
+	}
+
+	.empty-state {
+		color: var(--color-text-faint);
+		font-style: italic;
+		padding-bottom: var(--space-3xl);
+	}
+</style>

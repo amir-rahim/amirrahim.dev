@@ -1,0 +1,129 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+import { SITE } from '../config/site';
+
+interface Props {
+	title: string;
+	description?: string;
+	/** Absolute URL string for OG image */
+	ogImage?: string;
+	/** Suppress search-engine indexing */
+	noindex?: boolean;
+}
+
+const {
+	title,
+	description = SITE.description,
+	ogImage,
+	noindex = false,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const resolvedOgImage = ogImage ?? new URL('/og-default.png', Astro.site).toString();
+const pageTitle = title === SITE.title ? title : `${title} — ${SITE.title}`;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<link rel="sitemap" href="/sitemap-index.xml" />
+		<link
+			rel="alternate"
+			type="application/rss+xml"
+			title={SITE.title}
+			href={new URL('rss.xml', Astro.site)}
+		/>
+		<meta name="generator" content={Astro.generator} />
+
+		{noindex && <meta name="robots" content="noindex" />}
+
+		<link rel="canonical" href={canonicalURL} />
+		<title>{pageTitle}</title>
+		<meta name="description" content={description} />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={Astro.url} />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={resolvedOgImage} />
+		<meta property="og:site_name" content={SITE.title} />
+
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content={Astro.url} />
+		<meta property="twitter:title" content={pageTitle} />
+		<meta property="twitter:description" content={description} />
+		<meta property="twitter:image" content={resolvedOgImage} />
+		{SITE.twitterHandle && (
+			<meta name="twitter:creator" content={SITE.twitterHandle} />
+		)}
+
+		<ClientRouter />
+
+		<!-- Apply stored theme before first paint to avoid flash -->
+		<script is:inline>
+			(function () {
+				var stored = localStorage.getItem('theme');
+				if (stored) {
+					document.documentElement.dataset.theme = stored;
+				} else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+					document.documentElement.dataset.theme = 'light';
+				} else {
+					document.documentElement.dataset.theme = 'dark';
+				}
+			})();
+		</script>
+	</head>
+
+	<body>
+		<Nav />
+		<main>
+			<slot />
+		</main>
+		<Footer />
+
+		<!-- Scroll-reveal: re-runs after each View Transition -->
+		<script>
+			function initReveal() {
+				const prefersReduced = window.matchMedia(
+					'(prefers-reduced-motion: reduce)',
+				).matches;
+
+				document.querySelectorAll('.reveal').forEach((el) => {
+					if (prefersReduced) {
+						el.classList.add('is-visible');
+						return;
+					}
+					el.classList.remove('is-visible');
+				});
+
+				if (prefersReduced) return;
+
+				const observer = new IntersectionObserver(
+					(entries) => {
+						entries.forEach((entry) => {
+							if (entry.isIntersecting) {
+								entry.target.classList.add('is-visible');
+								observer.unobserve(entry.target);
+							}
+						});
+					},
+					{ threshold: 0.08 },
+				);
+
+				document.querySelectorAll('.reveal').forEach((el) =>
+					observer.observe(el),
+				);
+			}
+
+			initReveal();
+			document.addEventListener('astro:page-load', initReveal);
+		</script>
+	</body>
+</html>

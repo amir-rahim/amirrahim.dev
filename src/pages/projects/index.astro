@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+
+const projects = (await getCollection('projects'))
+	.filter((p) => !p.data.draft)
+	.sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+	title="Projects"
+	description="A showcase of selected engineering projects — systems, tools, and experiments."
+>
+	<div class="container">
+		<header class="page-header reveal">
+			<span class="page-label">Work</span>
+			<h1>Projects</h1>
+			<p class="page-desc">
+				Selected engineering work — systems built, problems solved, things
+				learned.
+			</p>
+		</header>
+
+		<div class="projects-grid stagger">
+			{projects.map((project) => (
+				<ProjectCard project={project} />
+			))}
+		</div>
+
+		{projects.length === 0 && (
+			<p class="empty-state">Projects coming soon.</p>
+		)}
+	</div>
+</BaseLayout>
+
+<style>
+	.page-header {
+		padding-top: var(--space-2xl);
+		padding-bottom: var(--space-xl);
+		max-width: 600px;
+	}
+
+	.page-label {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		font-weight: 500;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-accent);
+		display: block;
+		margin-bottom: 0.5em;
+	}
+
+	.page-desc {
+		font-size: 1.05rem;
+		color: var(--color-text-muted);
+		margin-top: var(--space-sm);
+		line-height: 1.7;
+		max-width: none;
+	}
+
+	.projects-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+		gap: var(--space-lg);
+		padding-bottom: var(--space-3xl);
+	}
+
+	.empty-state {
+		color: var(--color-text-faint);
+		font-style: italic;
+		padding-bottom: var(--space-3xl);
+	}
+</style>
