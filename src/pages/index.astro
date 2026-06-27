@@ -15,24 +15,15 @@ const featuredProjects = (await getCollection('projects'))
 	.sort((a, b) => a.data.order - b.data.order)
 	.slice(0, 4);
 
-/* EDIT: update these to match your actual focus areas */
-const focuses = [
-	{
-		num: '01',
-		title: 'Platform Engineering',
-		desc: 'Building reliable infrastructure and internal developer platforms — Kubernetes, CI/CD, and the tooling that lets teams ship with confidence.',
-	},
-	{
-		num: '02',
-		title: 'Technical Leadership',
-		desc: 'Bridging engineering and product — defining roadmaps, running technical discovery, and moving cross-functional teams from ambiguity to delivery.',
-	},
-	{
-		num: '03',
-		title: 'Developer Experience',
-		desc: 'Reducing friction in the development loop. Better tooling, observability, and documentation so engineers can focus on problems that matter.',
-	},
-];
+/* EDIT: the large statement shown on slide 2 of the hero */
+const statement = {
+	lines: [
+		'Building the infrastructure',
+		'engineers rely on.',
+	],
+	current: 'Graduate Rotation · UBS · London, UK',
+	tags: ['Infrastructure', 'Platform Engineering', 'Developer Experience'],
+};
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
@@ -75,20 +66,24 @@ const focuses = [
 				</div>
 			</div>
 
-			<!-- Slide 2: focus areas -->
+			<!-- Slide 2: large typographic statement -->
 			<div class="hero-slide" id="slide-2" aria-hidden="true" style="opacity:0;pointer-events:none">
 				<div class="page-wrap slide-content">
-					<p class="label slide-eyebrow">Focus areas</p>
-					<div class="focus-list">
-						{focuses.map((f) => (
-							<div class="focus-row">
-								<div class="focus-row-head">
-									<span class="label focus-row-num">{f.num}</span>
-									<h2 class="focus-row-title">{f.title}</h2>
-								</div>
-								<p class="focus-row-desc">{f.desc}</p>
-							</div>
+					<p class="label slide-eyebrow">Currently</p>
+
+					<div class="statement-block">
+						{statement.lines.map((line) => (
+							<span class="statement-line">{line}</span>
 						))}
+					</div>
+
+					<div class="statement-meta">
+						<span class="label statement-role">{statement.current}</span>
+						<div class="statement-tags">
+							{statement.tags.map((tag) => (
+								<span class="statement-tag label">{tag}</span>
+							))}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -205,42 +200,42 @@ const focuses = [
 		gap: var(--space-sm);
 	}
 
-	/* Slide 2: focus list */
-	.focus-list {
+	/* Slide 2: typographic statement */
+	.statement-block {
 		display: flex;
 		flex-direction: column;
-		margin-top: var(--space-lg);
+		margin-top: var(--space-md);
+		margin-bottom: var(--space-2xl);
 	}
 
-	.focus-row {
-		padding-block: var(--space-lg);
-		border-top: 0.5px solid var(--color-rule);
-	}
-
-	.focus-row:last-child { border-bottom: 0.5px solid var(--color-rule); }
-
-	.focus-row-head {
-		display: flex;
-		align-items: baseline;
-		gap: var(--space-lg);
-		margin-bottom: 0.4em;
-	}
-
-	.focus-row-num { color: var(--color-text-faint); flex-shrink: 0; }
-
-	.focus-row-title {
-		font-size: clamp(1.1rem, 2vw, 1.4rem);
+	.statement-line {
+		font-size: clamp(2rem, 5vw, 3.75rem);
 		font-weight: var(--weight-medium);
-		letter-spacing: -0.02em;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
 		color: var(--color-text);
 	}
 
-	.focus-row-desc {
-		font-size: var(--text-body);
-		color: var(--color-text-muted);
-		line-height: 1.65;
-		max-width: 56ch;
-		padding-left: calc(var(--space-lg) + 2.5ch); /* align under title */
+	.statement-meta {
+		border-top: 0.5px solid var(--color-rule);
+		padding-top: var(--space-lg);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+	}
+
+	.statement-role { color: var(--color-text-muted); }
+
+	.statement-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-sm);
+	}
+
+	.statement-tag {
+		border: 0.5px solid var(--color-rule);
+		padding: 0.25em 0.75em;
+		color: var(--color-text-faint);
 	}
 
 	/* ── Progress bar ── */
@@ -340,8 +335,8 @@ const focuses = [
 	.posts-list { border-top: 0.5px solid var(--color-rule); }
 
 	@media (max-width: 600px) {
-		.project-grid { grid-template-columns: 1fr; }
-		.focus-row-desc { padding-left: 0; }
+		.project-grid  { grid-template-columns: 1fr; }
+		.statement-line { font-size: clamp(1.6rem, 8vw, 2.5rem); }
 	}
 
 	@media (prefers-reduced-motion: reduce) {

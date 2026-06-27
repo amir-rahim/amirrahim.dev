@@ -7,8 +7,8 @@ const updated = new Date().toLocaleDateString('en-GB', { month: 'short', year: '
 
 <footer class="site-footer">
 
-	<!-- Disclaimer row -->
-	<div class="disclaimer page-wrap">
+	<!-- Disclaimer — full-bleed, no max-width constraint -->
+	<div class="disclaimer">
 		<p class="label disclaimer-text">
 			Views expressed on this site are entirely my own and do not represent
 			those of my employer or any organisation I am affiliated with.
@@ -21,7 +21,7 @@ const updated = new Date().toLocaleDateString('en-GB', { month: 'short', year: '
 	<div class="page-wrap footer-inner">
 		<span class="label">&copy; {year} {SITE.author}</span>
 		<nav class="footer-nav" aria-label="Footer links">
-			<a href="/rss.xml"          class="footer-link label">RSS</a>
+			<a href="/rss.xml"             class="footer-link label">RSS</a>
 			<a href={SITE.social.github}   class="footer-link label" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
 			<a href={SITE.social.linkedin} class="footer-link label" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
 		</nav>
@@ -36,17 +36,18 @@ const updated = new Date().toLocaleDateString('en-GB', { month: 'short', year: '
 		margin-top: auto;
 	}
 
-	/* Disclaimer */
+	/* Full-bleed disclaimer — uses viewport width, own side padding */
 	.disclaimer {
-		padding-block: var(--space-lg);
+		width: 100%;
+		padding: var(--space-lg) var(--gutter-side);
 		border-bottom: 0.5px solid var(--color-rule);
 	}
 
 	.disclaimer-text {
 		color: var(--color-text-faint);
 		line-height: 1.6;
-		max-width: 72ch;
-		letter-spacing: 0.04em; /* slightly looser for legal-ish text */
+		letter-spacing: 0.04em;
+		max-width: none; /* let it run the full width */
 	}
 
 	/* Main bar */
