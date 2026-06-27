@@ -18,39 +18,55 @@ const featuredProjects = (await getCollection('projects'))
 
 <BaseLayout title={SITE.title} description={SITE.description}>
 
-	<!-- Full-bleed hero (outside page-wrap so it spans the viewport) -->
-	<section class="hero" aria-label="Introduction">
+	<!--
+		Hero is 200vh tall. The inner panel is sticky so it pins to the
+		top while you scroll through, then releases when you reach the
+		content below.
+	-->
+	<section class="hero" id="hero" aria-label="Introduction">
 		<canvas id="hero-canvas" class="hero-canvas" aria-hidden="true"></canvas>
 
-		<div class="hero-inner page-wrap">
-			<p class="label hero-label">Software Engineer</p>
-			<h1 class="hero-name">{SITE.author}</h1>
-			<p class="hero-tagline">{SITE.description}</p>
+		<div class="hero-sticky">
+			<!-- Progress bar — fills left→right as you scroll through the hero -->
+			<div class="hero-progress" aria-hidden="true">
+				<div class="hero-progress-bar" id="hero-progress-bar"></div>
+			</div>
 
-			<div class="hero-actions">
-				<a href="/resume" class="btn">View Resume</a>
-				<a
-					href={SITE.social.github}
-					class="btn"
-					target="_blank"
-					rel="noopener noreferrer"
-				>GitHub &nearr;</a>
-				<a
-					href={SITE.social.linkedin}
-					class="btn"
-					target="_blank"
-					rel="noopener noreferrer"
-				>LinkedIn &nearr;</a>
-				<a href={`mailto:${SITE.social.email}`} class="btn">Email</a>
+			<div class="hero-inner page-wrap" id="hero-inner">
+				<p class="label hero-label">Software Engineer</p>
+				<h1 class="hero-name">{SITE.author}</h1>
+				<p class="hero-tagline">{SITE.description}</p>
+
+				<div class="hero-actions">
+					<a href="/resume" class="btn">View Resume</a>
+					<a
+						href={SITE.social.github}
+						class="btn"
+						target="_blank"
+						rel="noopener noreferrer"
+					>GitHub &nearr;</a>
+					<a
+						href={SITE.social.linkedin}
+						class="btn"
+						target="_blank"
+						rel="noopener noreferrer"
+					>LinkedIn &nearr;</a>
+					<a href={`mailto:${SITE.social.email}`} class="btn">Email</a>
+				</div>
+			</div>
+
+			<!-- Scroll hint — fades once scrolling starts -->
+			<div class="scroll-hint" id="scroll-hint" aria-hidden="true">
+				<div class="scroll-line"></div>
+				<span class="label">Scroll</span>
 			</div>
 		</div>
 	</section>
 
-	<!-- Numbered content sections -->
+	<!-- Content rows sit below the 200vh hero -->
 	<div class="page-wrap">
 		<div class="doc-rows">
 
-			<!-- 01 - Projects -->
 			{featuredProjects.length > 0 && (
 				<div class="doc-row reveal">
 					<span class="row-num">01</span>
@@ -71,7 +87,6 @@ const featuredProjects = (await getCollection('projects'))
 				</div>
 			)}
 
-			<!-- 02 - Writing -->
 			{allPosts.length > 0 && (
 				<div class="doc-row reveal">
 					<span class="row-num">02</span>
@@ -98,17 +113,24 @@ const featuredProjects = (await getCollection('projects'))
 </BaseLayout>
 
 <style>
-	/* Full-viewport hero */
+	/* ── Hero shell — tall so there's scroll room ── */
 	.hero {
 		position: relative;
-		overflow: hidden;
-		min-height: calc(100dvh - 2.875rem); /* subtract sticky nav */
+		min-height: 200vh;
+	}
+
+	/* ── Sticky panel — stays pinned while scrolling through hero ── */
+	.hero-sticky {
+		position: sticky;
+		top: 0;
+		height: 100dvh;
 		display: flex;
-		align-items: center;
+		flex-direction: column;
+		overflow: hidden;
 		border-bottom: 0.5px solid var(--color-rule);
 	}
 
-	/* Canvas fills hero entirely */
+	/* ── Canvas fills the sticky panel ── */
 	.hero-canvas {
 		position: absolute;
 		inset: 0;
@@ -117,13 +139,15 @@ const featuredProjects = (await getCollection('projects'))
 		display: block;
 	}
 
-	/* Content sits above canvas */
+	/* ── Text content — left-anchored ── */
 	.hero-inner {
 		position: relative;
 		z-index: 1;
-		padding-top: var(--space-3xl);
-		padding-bottom: var(--space-3xl);
-		max-width: 640px; /* constrain text width regardless of page-wrap */
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		will-change: opacity, transform;
 	}
 
 	.hero-label  { margin-bottom: var(--space-lg); }
@@ -133,7 +157,7 @@ const featuredProjects = (await getCollection('projects'))
 		font-size: var(--text-body);
 		color: var(--color-text-secondary);
 		line-height: 1.7;
-		max-width: 42ch;
+		max-width: 52ch;
 		margin-bottom: var(--space-xl);
 	}
 
@@ -143,13 +167,64 @@ const featuredProjects = (await getCollection('projects'))
 		gap: var(--space-sm);
 	}
 
-	/* Section chrome */
-	.section-head { margin-bottom: var(--space-md); }
-
-	.section-head .label {
-		display: block;
-		margin-bottom: 0.3em;
+	/* ── Swiss progress bar ── */
+	.hero-progress {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 1.5px;
+		background: var(--color-rule);
+		z-index: 2;
 	}
+
+	.hero-progress-bar {
+		height: 100%;
+		width: 0%;
+		background: var(--color-rule-heavy);
+	}
+
+	/* ── Scroll hint ── */
+	.scroll-hint {
+		position: absolute;
+		bottom: var(--space-xl);
+		left: var(--gutter-side);
+		z-index: 2;
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+		transition: opacity 300ms ease;
+	}
+
+	.scroll-line {
+		width: 32px;
+		height: 0.5px;
+		background: var(--color-text-muted);
+		position: relative;
+		overflow: hidden;
+	}
+
+	/* Animated fill on the scroll line */
+	.scroll-line::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: var(--color-text);
+		transform: translateX(-100%);
+		animation: scan 1.6s ease-in-out infinite;
+	}
+
+	@keyframes scan {
+		0%   { transform: translateX(-100%); }
+		50%  { transform: translateX(0%); }
+		100% { transform: translateX(100%); }
+	}
+
+	.scroll-hint .label { color: var(--color-text-muted); }
+
+	/* ── Section chrome ── */
+	.section-head { margin-bottom: var(--space-md); }
+	.section-head .label { display: block; margin-bottom: 0.3em; }
 
 	.section-title {
 		font-size: var(--text-heading);
@@ -166,7 +241,7 @@ const featuredProjects = (await getCollection('projects'))
 
 	.section-more:hover { color: var(--color-text); }
 
-	/* Project grid — border-collapse technique */
+	/* ── Project grid ── */
 	.project-grid {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
@@ -184,46 +259,106 @@ const featuredProjects = (await getCollection('projects'))
 		background: var(--color-surface);
 	}
 
-	/* Posts list */
+	/* ── Posts list ── */
 	.posts-list { border-top: 0.5px solid var(--color-rule); }
 
 	@media (max-width: 600px) {
 		.project-grid { grid-template-columns: 1fr; }
-		.hero-inner { padding-top: var(--space-2xl); padding-bottom: var(--space-2xl); }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.scroll-line::after { animation: none; }
 	}
 </style>
 
 <script>
-	/* 8-bit character grid animation */
+	/* ── Scroll-driven hero exit ─────────────────────────────────────── */
+	function initHeroScroll() {
+		const hero        = document.getElementById('hero');
+		const heroInner   = document.getElementById('hero-inner');
+		const progressBar = document.getElementById('hero-progress-bar');
+		const scrollHint  = document.getElementById('scroll-hint');
+		if (!hero || !heroInner) return;
+
+		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		function easeIn(t: number) { return t * t; }
+
+		function onScroll() {
+			const rect       = hero.getBoundingClientRect();
+			const scrollable = hero.offsetHeight - window.innerHeight;
+			const scrolled   = Math.max(0, -rect.top);
+			const progress   = scrollable > 0 ? Math.min(1, scrolled / scrollable) : 0;
+
+			/* Store for canvas to read */
+			(window as any).__heroProgress = progress;
+
+			/* Progress bar */
+			if (progressBar) progressBar.style.width = `${progress * 100}%`;
+
+			/* Scroll hint fades once you start */
+			if (scrollHint) {
+				scrollHint.style.opacity = progress < 0.04 ? '1' : '0';
+			}
+
+			if (reduced) return;
+
+			/* Text fades + lifts in the second half of the scroll range */
+			if (progress > 0.45) {
+				const t    = (progress - 0.45) / 0.55;
+				const ease = easeIn(Math.min(1, t));
+				heroInner.style.opacity   = `${1 - ease}`;
+				heroInner.style.transform = `translateY(${-ease * 48}px)`;
+			} else {
+				heroInner.style.opacity   = '1';
+				heroInner.style.transform = 'translateY(0)';
+			}
+		}
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+		onScroll();
+
+		const cleanup = () => {
+			window.removeEventListener('scroll', onScroll);
+			document.removeEventListener('astro:before-swap', cleanup);
+		};
+		document.addEventListener('astro:before-swap', cleanup);
+	}
+
+	initHeroScroll();
+	document.addEventListener('astro:page-load', initHeroScroll);
+
+
+	/* ── 8-bit canvas ────────────────────────────────────────────────── */
 	function initHeroCanvas() {
 		const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement | null;
 		if (!canvas) return;
-
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
 		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-		const CELL   = 18;          /* px per grid cell — chunky 8-bit feel  */
-		const CHARS  = ['0', '1', '0', '1', '0', '1', '+', '·', '×', '-'];
-		const MAX_OP = 0.13;        /* highest a cell can glow                */
+		const CELL      = 18;
+		const CHARS     = ['0','1','0','1','0','1','+','·','×','-','0','1'];
+		const BASE_FILL = 0.04;
+		const MAX_OP    = 0.14;
+		const FPS       = 22;
+		const INTERVAL  = 1000 / FPS;
 
 		interface Cell {
 			x: number; y: number;
 			char: string;
 			opacity: number;
 			target: number;
-			decay: number;
+			speed: number;
 			ticksLeft: number;
 		}
 
 		let cells: Cell[] = [];
 		let raf = 0;
-		let lastTime = 0;
-		const FPS = 20;
-		const INTERVAL = 1000 / FPS;
+		let last = 0;
 
-		function getCssColor(prop: string): string {
+		function getCssColor(prop: string) {
 			return getComputedStyle(document.documentElement)
 				.getPropertyValue(prop).trim();
 		}
@@ -241,41 +376,43 @@ const featuredProjects = (await getCollection('projects'))
 			for (let r = 0; r < rows; r++) {
 				for (let c = 0; c < cols; c++) {
 					cells.push({
-						x: c * CELL,
-						y: r * CELL,
+						x: c * CELL, y: r * CELL,
 						char: CHARS[Math.floor(Math.random() * CHARS.length)],
 						opacity: 0,
 						target: 0,
-						decay: 0.008 + Math.random() * 0.018,
-						ticksLeft: Math.floor(Math.random() * FPS * 4),
+						speed: 0.06 + Math.random() * 0.1,
+						ticksLeft: Math.floor(Math.random() * FPS * 3),
 					});
 				}
 			}
 		}
 
 		function tickCells() {
-			const active = Math.ceil(cells.length * 0.04); /* ~4% lit at once */
+			/* Density grows as hero scroll progress increases */
+			const progress    = (window as any).__heroProgress ?? 0;
+			const densityMult = 1 + progress * 5;  /* up to 6× denser at full scroll */
+			const fillTarget  = BASE_FILL * densityMult;
+			const wantActive  = Math.ceil(cells.length * fillTarget);
+
 			for (const cell of cells) {
-				if (cell.ticksLeft > 0) {
-					cell.ticksLeft--;
-					/* lerp toward target */
-					cell.opacity += (cell.target - cell.opacity) * cell.decay;
-					continue;
-				}
-				/* settle and schedule next state */
+				/* Lerp toward target */
+				cell.opacity += (cell.target - cell.opacity) * cell.speed;
+
+				if (cell.ticksLeft > 0) { cell.ticksLeft--; continue; }
+
+				/* Settle, schedule next state */
 				cell.opacity = cell.target;
+
 				if (cell.target > 0) {
-					/* turn off, rest for a while */
-					cell.target = 0;
-					cell.ticksLeft = Math.floor(FPS * (2 + Math.random() * 8));
+					cell.target    = 0;
+					cell.ticksLeft = Math.floor(FPS * (1 + Math.random() * 6));
 				} else {
-					/* maybe turn on */
-					if (Math.random() < active / cells.length) {
-						cell.target   = MAX_OP * (0.3 + Math.random() * 0.7);
-						cell.char     = CHARS[Math.floor(Math.random() * CHARS.length)];
-						cell.ticksLeft = Math.floor(FPS * (0.5 + Math.random() * 2));
+					if (Math.random() < wantActive / cells.length) {
+						cell.target    = MAX_OP * (0.25 + Math.random() * 0.75);
+						cell.char      = CHARS[Math.floor(Math.random() * CHARS.length)];
+						cell.ticksLeft = Math.floor(FPS * (0.4 + Math.random() * 2));
 					} else {
-						cell.ticksLeft = Math.floor(FPS * (0.5 + Math.random() * 3));
+						cell.ticksLeft = Math.floor(FPS * (0.2 + Math.random() * 2));
 					}
 				}
 			}
@@ -284,7 +421,7 @@ const featuredProjects = (await getCollection('projects'))
 		function draw() {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			const color = getCssColor('--color-text');
-			ctx.font = `${Math.round(CELL * 0.65)}px 'JetBrains Mono', monospace`;
+			ctx.font = `${Math.round(CELL * 0.62)}px 'JetBrains Mono', monospace`;
 			ctx.textAlign    = 'center';
 			ctx.textBaseline = 'middle';
 
@@ -300,8 +437,8 @@ const featuredProjects = (await getCollection('projects'))
 
 		function loop(ts: number) {
 			raf = requestAnimationFrame(loop);
-			if (ts - lastTime < INTERVAL) return;
-			lastTime = ts;
+			if (ts - last < INTERVAL) return;
+			last = ts;
 			tickCells();
 			draw();
 		}
@@ -311,7 +448,6 @@ const featuredProjects = (await getCollection('projects'))
 		resize();
 		raf = requestAnimationFrame(loop);
 
-		/* Clean up when View Transitions swap the DOM */
 		const cleanup = () => {
 			cancelAnimationFrame(raf);
 			ro.disconnect();
