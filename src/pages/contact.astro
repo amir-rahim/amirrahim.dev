@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config/site';
+---
+
+<BaseLayout
+	title="Contact"
+	description={`Get in touch with ${SITE.author}.`}
+>
+	<div class="page-wrap">
+
+		<header class="page-header reveal">
+			<p class="label header-label">Get in touch</p>
+			<h1 class="page-title">Contact</h1>
+			<p class="page-desc">
+				The best way to reach me is by email. I'm also reachable on LinkedIn
+				and GitHub.
+			</p>
+		</header>
+
+		<div class="doc-rows">
+
+			<!-- Email -->
+			<div class="doc-row reveal">
+				<span class="row-num">01</span>
+				<div class="row-body">
+					<p class="label row-label">Email</p>
+					<a
+						href={`mailto:${SITE.social.email}`}
+						class="contact-link"
+					>
+						{SITE.social.email}
+					</a>
+				</div>
+			</div>
+
+			<!-- LinkedIn -->
+			<div class="doc-row reveal">
+				<span class="row-num">02</span>
+				<div class="row-body">
+					<p class="label row-label">LinkedIn</p>
+					<a
+						href={SITE.social.linkedin}
+						class="contact-link"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						{SITE.social.linkedin.replace('https://', '')} ↗
+					</a>
+				</div>
+			</div>
+
+			<!-- GitHub -->
+			<div class="doc-row reveal">
+				<span class="row-num">03</span>
+				<div class="row-body">
+					<p class="label row-label">GitHub</p>
+					<a
+						href={SITE.social.github}
+						class="contact-link"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						{SITE.social.github.replace('https://', '')} ↗
+					</a>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+</BaseLayout>
+
+<style>
+	.page-header {
+		padding-top: var(--space-2xl);
+		padding-bottom: var(--space-xl);
+		border-bottom: 0.5px solid var(--color-rule);
+	}
+
+	.header-label { margin-bottom: 0.4em; }
+
+	.page-title {
+		font-size: var(--text-hero);
+		letter-spacing: -0.03em;
+		margin-bottom: var(--space-sm);
+	}
+
+	.page-desc {
+		font-size: var(--text-body);
+		color: var(--color-text-muted);
+		max-width: 42ch;
+	}
+
+	.row-label {
+		margin-bottom: 0.5em;
+		color: var(--color-text-faint);
+	}
+
+	.contact-link {
+		font-size: 1.125rem;
+		font-weight: var(--weight-medium);
+		color: var(--color-text);
+		letter-spacing: -0.01em;
+		transition: opacity var(--dur-fast) ease;
+	}
+
+	.contact-link:hover { opacity: 0.5; }
+</style>

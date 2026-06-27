@@ -19,38 +19,41 @@ const featuredProjects = (await getCollection('projects'))
 <BaseLayout title={SITE.title} description={SITE.description}>
 	<div class="page-wrap">
 
-		<!-- ── Hero ──────────────────────────────────────────────────── -->
+		<!-- Hero -->
 		<section class="hero" aria-label="Introduction">
-			<p class="label hero-label">Software Engineer</p>
+			<!-- Animated grid backdrop -->
+			<div class="hero-grid" aria-hidden="true"></div>
 
-			<h1 class="hero-name">{SITE.author}</h1>
+			<div class="hero-content">
+				<p class="label hero-label">Software Engineer</p>
 
-			<p class="hero-tagline">
-				{SITE.description}
-			</p>
+				<h1 class="hero-name">{SITE.author}</h1>
 
-			<div class="hero-actions">
-				<a href="/resume" class="btn">View Resume</a>
-				<a
-					href={SITE.social.github}
-					class="btn"
-					target="_blank"
-					rel="noopener noreferrer"
-				>GitHub ↗</a>
-				<a
-					href={SITE.social.linkedin}
-					class="btn"
-					target="_blank"
-					rel="noopener noreferrer"
-				>LinkedIn ↗</a>
-				<a href={`mailto:${SITE.social.email}`} class="btn">Email</a>
+				<p class="hero-tagline">{SITE.description}</p>
+
+				<div class="hero-actions">
+					<a href="/resume" class="btn">View Resume</a>
+					<a
+						href={SITE.social.github}
+						class="btn"
+						target="_blank"
+						rel="noopener noreferrer"
+					>GitHub &nearr;</a>
+					<a
+						href={SITE.social.linkedin}
+						class="btn"
+						target="_blank"
+						rel="noopener noreferrer"
+					>LinkedIn &nearr;</a>
+					<a href={`mailto:${SITE.social.email}`} class="btn">Email</a>
+				</div>
 			</div>
 		</section>
 
-		<!-- ── Numbered content sections ─────────────────────────────── -->
+		<!-- Numbered content sections -->
 		<div class="doc-rows">
 
-			<!-- 01 — Projects -->
+			<!-- 01 - Projects -->
 			{featuredProjects.length > 0 && (
 				<div class="doc-row reveal">
 					<span class="row-num">01</span>
@@ -68,13 +71,13 @@ const featuredProjects = (await getCollection('projects'))
 						</div>
 
 						<a href="/projects" class="section-more label">
-							All projects →
+							All projects &rarr;
 						</a>
 					</div>
 				</div>
 			)}
 
-			<!-- 02 — Writing -->
+			<!-- 02 - Writing -->
 			{allPosts.length > 0 && (
 				<div class="doc-row reveal">
 					<span class="row-num">02</span>
@@ -91,22 +94,60 @@ const featuredProjects = (await getCollection('projects'))
 						</div>
 
 						<a href="/blog" class="section-more label">
-							All posts →
+							All posts &rarr;
 						</a>
 					</div>
 				</div>
 			)}
 
-		</div><!-- /doc-rows -->
-	</div><!-- /page-wrap -->
+		</div>
+	</div>
 </BaseLayout>
 
 <style>
-	/* ── Hero ── */
+	/* Hero */
 	.hero {
+		position: relative;
+		overflow: hidden;
 		padding-top: var(--space-3xl);
 		padding-bottom: var(--space-2xl);
 		border-bottom: 0.5px solid var(--color-rule);
+	}
+
+	/* Animated Swiss grid backdrop */
+	.hero-grid {
+		position: absolute;
+		inset: -40px;
+		background-image:
+			repeating-linear-gradient(
+				0deg,
+				transparent,
+				transparent 39px,
+				var(--color-rule) 40px
+			),
+			repeating-linear-gradient(
+				90deg,
+				transparent,
+				transparent 39px,
+				var(--color-rule) 40px
+			);
+		animation: grid-drift 40s linear infinite;
+		pointer-events: none;
+		z-index: 0;
+	}
+
+	@keyframes grid-drift {
+		0%   { transform: translate(0, 0); }
+		100% { transform: translate(40px, 40px); }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hero-grid { animation: none; }
+	}
+
+	.hero-content {
+		position: relative;
+		z-index: 1;
 		max-width: 640px;
 	}
 
@@ -132,9 +173,9 @@ const featuredProjects = (await getCollection('projects'))
 		gap: var(--space-sm);
 	}
 
-	/* ── Section chrome ── */
+	/* Section chrome */
 	.section-head {
-		margin-bottom: var(--space-lg);
+		margin-bottom: var(--space-md);
 	}
 
 	.section-head .label {
@@ -150,14 +191,14 @@ const featuredProjects = (await getCollection('projects'))
 
 	.section-more {
 		display: inline-block;
-		margin-top: var(--space-lg);
+		margin-top: var(--space-md);
 		color: var(--color-text-muted);
 		transition: color var(--dur-fast) ease;
 	}
 
 	.section-more:hover { color: var(--color-text); }
 
-	/* ── Project grid — borders form cells ── */
+	/* Project grid - borders form cells */
 	.project-grid {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
@@ -175,7 +216,7 @@ const featuredProjects = (await getCollection('projects'))
 		background: var(--color-surface);
 	}
 
-	/* ── Posts list ── */
+	/* Posts list */
 	.posts-list {
 		border-top: 0.5px solid var(--color-rule);
 	}

@@ -7,6 +7,7 @@ const navItems = [
 	{ label: 'Resume',   href: '/resume',   num: '001' },
 	{ label: 'Projects', href: '/projects', num: '002' },
 	{ label: 'Blog',     href: '/blog',     num: '003' },
+	{ label: 'Contact',  href: '/contact',  num: '004' },
 ] as const;
 ---
 
@@ -149,11 +150,17 @@ const navItems = [
 
 <script>
 	function initTheme() {
-		const btn   = document.getElementById('theme-toggle');
-		const label = document.getElementById('theme-label');
-		if (!btn || !label) return;
+		const btn = document.getElementById('theme-toggle');
+		if (!btn) return;
 
-		function currentTheme(): string {
+		/* Clone wipes any stale listeners added by previous page-load calls */
+		const fresh = btn.cloneNode(true);
+		btn.replaceWith(fresh);
+
+		const label = fresh.querySelector('[id="theme-label"]');
+		if (!label) return;
+
+		function currentTheme() {
 			return (
 				document.documentElement.dataset.theme ??
 				(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
@@ -161,11 +168,10 @@ const navItems = [
 		}
 
 		function updateLabel() {
-			/* Show the mode you'll switch TO */
 			label.textContent = currentTheme() === 'dark' ? 'Light' : 'Dark';
 		}
 
-		btn.addEventListener('click', () => {
+		fresh.addEventListener('click', () => {
 			const next = currentTheme() === 'dark' ? 'light' : 'dark';
 			document.documentElement.dataset.theme = next;
 			localStorage.setItem('theme', next);

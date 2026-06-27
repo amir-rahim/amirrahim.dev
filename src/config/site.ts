@@ -17,7 +17,7 @@ export const SITE = {
 	social: {
 		github: 'https://github.com/amir-rahim',
 		linkedin: 'https://linkedin.com/in/amir-rahim',
-		email: 'hello@amirrahim.dev',
+		email: 'contact@amirrahim.dev',
 	},
 
 	/** Navigation links (in order) */
@@ -26,5 +26,6 @@ export const SITE = {
 		{ label: 'Resume', href: '/resume' },
 		{ label: 'Projects', href: '/projects' },
 		{ label: 'Blog', href: '/blog' },
+		{ label: 'Contact', href: '/contact' },
 	],
 } as const;
