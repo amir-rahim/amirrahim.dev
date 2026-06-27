@@ -66,17 +66,12 @@ const pageTitle = title === SITE.title ? title : `${title} — ${SITE.title}`;
 
 		<ClientRouter />
 
-		<!-- Apply stored theme before first paint to avoid flash -->
+		<!-- Apply stored theme before first paint (avoids flash) -->
 		<script is:inline>
 			(function () {
 				var stored = localStorage.getItem('theme');
-				if (stored) {
-					document.documentElement.dataset.theme = stored;
-				} else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-					document.documentElement.dataset.theme = 'light';
-				} else {
-					document.documentElement.dataset.theme = 'dark';
-				}
+				if (stored) document.documentElement.dataset.theme = stored;
+				/* else: CSS handles via prefers-color-scheme */
 			})();
 		</script>
 	</head>

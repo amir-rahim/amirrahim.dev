@@ -4,129 +4,81 @@ import FormattedDate from './FormattedDate.astro';
 
 interface Props {
 	post: CollectionEntry<'blog'>;
-	featured?: boolean;
+	/** When true, the component renders its own border-top (for standalone lists) */
+	bordered?: boolean;
 }
 
-const { post, featured = false } = Astro.props;
+const { post, bordered = false } = Astro.props;
 const { title, description, pubDate, tags } = post.data;
+
+const readingWords = description?.split(' ').length ?? 80;
+const readMins = Math.max(1, Math.ceil(readingWords / 200));
 ---
 
-<article class:list={['blog-card card reveal', { featured }]}>
-	<a href={`/blog/${post.id}/`} class="card-link" aria-label={title}>
-		<header class="card-header">
-			<div class="card-meta">
-				<time class="mono-label">
-					<FormattedDate date={pubDate} />
-				</time>
-				{
-					tags.length > 0 && (
-						<span class="meta-sep" aria-hidden="true">·</span>
-					)
-				}
-				{tags.slice(0, 2).map((tag) => (
-					<span class="tag">{tag}</span>
-				))}
-			</div>
-		</header>
-
-		<h3 class="card-title">{title}</h3>
-		<p class="card-desc">{description}</p>
-
-		<footer class="card-footer">
-			<span class="read-more">
-				Read post
-				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-					<path d="M5 12h14M12 5l7 7-7 7"/>
-				</svg>
-			</span>
-		</footer>
-	</a>
-</article>
+<a
+	href={`/blog/${post.id}/`}
+	class:list={['post-row', { bordered }]}
+	aria-label={title}
+>
+	<div class="post-left">
+		<span class="post-title">{title}</span>
+		<span class="label post-meta">
+			{tags.length > 0 && tags.slice(0, 2).join(' · ')}
+			{tags.length > 0 && ' · '}
+			{readMins} min
+		</span>
+	</div>
+	<time class="label post-date" datetime={pubDate.toISOString()}>
+		<FormattedDate date={pubDate} />
+	</time>
+</a>
 
 <style>
-	.blog-card {
-		overflow: hidden;
+	.post-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: var(--space-xl);
+		padding-block: var(--space-lg);
+		border-bottom: 0.5px solid var(--color-rule);
+		text-decoration: none;
+		transition: opacity var(--dur-fast) ease;
 	}
 
-	.card-link {
+	.post-row.bordered {
+		border-top: 0.5px solid var(--color-rule);
+	}
+
+	.post-row:hover { opacity: 0.6; }
+
+	.post-left {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-sm);
-		padding: var(--space-lg);
-		height: 100%;
-		text-decoration: none;
-	}
-
-	.card-header {
-		display: flex;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: 0.4em;
-	}
-
-	.card-meta {
-		display: flex;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: 0.5em;
-	}
-
-	.mono-label {
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		color: var(--color-text-faint);
-		letter-spacing: 0.03em;
-	}
-
-	.meta-sep {
-		color: var(--color-text-faint);
-		font-size: 0.8rem;
-	}
-
-	.card-title {
-		font-size: 1.15rem;
-		font-weight: 700;
-		letter-spacing: -0.01em;
-		color: var(--color-text);
-		line-height: 1.3;
-		transition: color var(--dur-fast) ease;
-	}
-
-	.blog-card:hover .card-title {
-		color: var(--color-accent);
-	}
-
-	.card-desc {
-		font-size: 0.9rem;
-		color: var(--color-text-muted);
-		line-height: 1.65;
+		gap: 0.35em;
 		flex: 1;
-		max-width: none;
+		min-width: 0;
 	}
 
-	.card-footer {
-		margin-top: auto;
-		padding-top: var(--space-sm);
+	.post-title {
+		font-size: var(--text-heading);
+		font-weight: var(--weight-medium);
+		color: var(--color-text);
+		letter-spacing: -0.01em;
+		line-height: 1.3;
 	}
 
-	.read-more {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.3em;
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		font-weight: 500;
-		letter-spacing: 0.04em;
-		color: var(--color-accent);
-		text-transform: uppercase;
-		transition: gap var(--dur-fast) ease;
+	.post-meta {
+		color: var(--color-text-muted);
 	}
 
-	.blog-card:hover .read-more {
-		gap: 0.5em;
+	.post-date {
+		color: var(--color-text-muted);
+		flex-shrink: 0;
+		padding-top: 0.1em; /* optical align with title baseline */
 	}
 
-	.featured .card-title {
-		font-size: 1.4rem;
+	@media (max-width: 600px) {
+		.post-row { flex-direction: column; gap: var(--space-xs); }
+		.post-date { padding-top: 0; }
 	}
 </style>

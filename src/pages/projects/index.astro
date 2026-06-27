@@ -12,25 +12,35 @@ const projects = (await getCollection('projects'))
 	title="Projects"
 	description="A showcase of selected engineering projects — systems, tools, and experiments."
 >
-	<div class="container">
-		<header class="page-header reveal">
-			<span class="page-label">Work</span>
-			<h1>Projects</h1>
+	<div class="page-wrap">
+
+		<!-- Page header -->
+		<header class="page-header">
+			<p class="label header-label">Work</p>
+			<h1 class="page-title">Projects</h1>
 			<p class="page-desc">
-				Selected engineering work — systems built, problems solved, things
-				learned.
+				Selected engineering work — systems built, problems solved, things learned.
 			</p>
 		</header>
 
-		<div class="projects-grid stagger">
-			{projects.map((project) => (
-				<ProjectCard project={project} />
-			))}
-		</div>
-
-		{projects.length === 0 && (
-			<p class="empty-state">Projects coming soon.</p>
+		<!-- 2-col specimen grid — borders form the cells -->
+		{projects.length > 0 ? (
+			<div class="project-grid">
+				{projects.map((project, i) => (
+					<ProjectCard project={project} index={i} />
+				))}
+			</div>
+		) : (
+			<div class="doc-rows">
+				<div class="doc-row">
+					<span class="row-num">—</span>
+					<div class="row-body">
+						<p class="label">Projects coming soon.</p>
+					</div>
+				</div>
+			</div>
 		)}
+
 	</div>
 </BaseLayout>
 
@@ -38,38 +48,43 @@ const projects = (await getCollection('projects'))
 	.page-header {
 		padding-top: var(--space-2xl);
 		padding-bottom: var(--space-xl);
-		max-width: 600px;
+		border-bottom: 0.5px solid var(--color-rule);
 	}
 
-	.page-label {
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		font-weight: 500;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--color-accent);
-		display: block;
-		margin-bottom: 0.5em;
+	.header-label { margin-bottom: 0.4em; }
+
+	.page-title {
+		font-size: var(--text-hero);
+		letter-spacing: -0.03em;
+		margin-bottom: var(--space-sm);
 	}
 
 	.page-desc {
-		font-size: 1.05rem;
+		font-size: var(--text-body);
 		color: var(--color-text-muted);
-		margin-top: var(--space-sm);
-		line-height: 1.7;
-		max-width: none;
+		max-width: 42ch;
 	}
 
-	.projects-grid {
+	/* Specimen grid — lines as cells */
+	.project-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
-		gap: var(--space-lg);
-		padding-bottom: var(--space-3xl);
+		grid-template-columns: 1fr 1fr;
+		border-top: 0.5px solid var(--color-rule);
+		border-left: 0.5px solid var(--color-rule);
+		margin-bottom: var(--space-3xl);
 	}
 
-	.empty-state {
-		color: var(--color-text-faint);
-		font-style: italic;
-		padding-bottom: var(--space-3xl);
+	.project-grid > :global(.project-cell) {
+		border-right: 0.5px solid var(--color-rule);
+		border-bottom: 0.5px solid var(--color-rule);
+		transition: background var(--dur-fast) ease;
+	}
+
+	.project-grid > :global(.project-cell:hover) {
+		background: var(--color-surface);
+	}
+
+	@media (max-width: 600px) {
+		.project-grid { grid-template-columns: 1fr; }
 	}
 </style>

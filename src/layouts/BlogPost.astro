@@ -9,114 +9,92 @@ const { title, description, pubDate, updatedDate, tags } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description}>
-	<div class="container">
-		<article class="post">
-			<header class="post-header">
-				<div class="post-meta">
-					<time class="mono-label">
-						<FormattedDate date={pubDate} />
-					</time>
-					{
-						updatedDate && (
-							<span class="mono-label updated">
-								Updated <FormattedDate date={updatedDate} />
-							</span>
-						)
-					}
-				</div>
+	<div class="page-wrap">
 
-				<h1 class="post-title">{title}</h1>
-				{description && <p class="post-desc">{description}</p>}
-
-				{
-					tags.length > 0 && (
-						<div class="post-tags">
-							{tags.map((tag) => (
-								<span class="tag">{tag}</span>
-							))}
-						</div>
-					)
-				}
-
-				<hr />
-			</header>
-
-			<div class="prose post-body">
-				<slot />
+		<!-- Post header -->
+		<header class="post-header reveal">
+			<div class="post-meta-row">
+				<time class="label" datetime={pubDate.toISOString()}>
+					<FormattedDate date={pubDate} />
+				</time>
+				{updatedDate && (
+					<span class="label post-updated">
+						Updated <FormattedDate date={updatedDate} />
+					</span>
+				)}
+				{tags.length > 0 && (
+					<span class="label post-tags">{tags.join(' · ')}</span>
+				)}
 			</div>
 
-			<footer class="post-footer">
-				<a href="/blog" class="btn btn-ghost back-link">
-					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-						<path d="M19 12H5M12 19l-7-7 7-7"/>
-					</svg>
-					All posts
-				</a>
-			</footer>
-		</article>
+			<h1 class="post-title">{title}</h1>
+			{description && <p class="post-desc">{description}</p>}
+		</header>
+
+		<!-- Post body in numbered doc-row -->
+		<div class="doc-rows">
+			<div class="doc-row">
+				<span class="row-num" aria-hidden="true">↓</span>
+				<div class="row-body">
+					<div class="prose post-body">
+						<slot />
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Footer nav -->
+		<div class="post-footer">
+			<a href="/blog" class="label back-link">← All posts</a>
+		</div>
+
 	</div>
 </BaseLayout>
 
 <style>
-	.post {
-		max-width: var(--max-w-prose);
-		margin-inline: auto;
-		padding-block: var(--space-2xl);
-	}
-
 	.post-header {
-		margin-bottom: var(--space-xl);
+		padding-top: var(--space-2xl);
+		padding-bottom: var(--space-xl);
+		border-bottom: 0.5px solid var(--color-rule);
 	}
 
-	.post-meta {
+	.post-meta-row {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
-		gap: var(--space-md);
+		gap: var(--space-lg);
 		margin-bottom: var(--space-md);
 	}
 
-	.mono-label {
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		color: var(--color-text-faint);
-		letter-spacing: 0.03em;
-	}
+	.post-meta-row .label { color: var(--color-text-muted); }
 
-	.updated {
-		color: var(--color-text-faint);
-	}
+	.post-updated { color: var(--color-text-faint); }
+	.post-tags    { color: var(--color-text-faint); }
 
 	.post-title {
-		font-size: clamp(2rem, 4vw, 3rem);
-		line-height: 1.15;
-		margin-bottom: var(--space-md);
+		font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+		letter-spacing: -0.025em;
+		margin-bottom: var(--space-sm);
 	}
 
 	.post-desc {
-		font-size: 1.1rem;
+		font-size: var(--text-body);
 		color: var(--color-text-muted);
-		line-height: 1.6;
-		margin-bottom: var(--space-md);
-		max-width: none;
+		line-height: 1.65;
+		margin-top: var(--space-sm);
 	}
 
-	.post-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.4em;
-		margin-bottom: var(--space-md);
-	}
-
-	.post-body {
-		margin-bottom: var(--space-2xl);
-	}
+	.post-body { padding-block: var(--space-sm); }
 
 	.post-footer {
-		border-top: 1px solid var(--color-border);
-		padding-top: var(--space-xl);
+		padding-block: var(--space-xl);
+		border-top: 0.5px solid var(--color-rule);
 	}
 
 	.back-link {
-		font-size: 0.875rem;
+		color: var(--color-text-muted);
+		transition: color var(--dur-fast) ease;
 	}
+
+	.back-link:hover { color: var(--color-text); }
 </style>
