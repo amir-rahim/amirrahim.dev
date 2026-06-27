@@ -6,25 +6,28 @@ const updated = new Date().toLocaleDateString('en-GB', { month: 'short', year: '
 ---
 
 <footer class="site-footer">
+
+	<!-- Disclaimer row -->
+	<div class="disclaimer page-wrap">
+		<p class="label disclaimer-text">
+			Views expressed on this site are entirely my own and do not represent
+			those of my employer or any organisation I am affiliated with.
+			Nothing here constitutes financial, legal, or investment advice.
+			All content is provided for informational purposes only.
+		</p>
+	</div>
+
+	<!-- Main footer bar -->
 	<div class="page-wrap footer-inner">
-		<span class="label">© {year} {SITE.author}</span>
+		<span class="label">&copy; {year} {SITE.author}</span>
 		<nav class="footer-nav" aria-label="Footer links">
-			<a href="/rss.xml" class="footer-link label">RSS</a>
-			<a
-				href={SITE.social.github}
-				class="footer-link label"
-				target="_blank"
-				rel="noopener noreferrer"
-			>GitHub ↗</a>
-			<a
-				href={SITE.social.linkedin}
-				class="footer-link label"
-				target="_blank"
-				rel="noopener noreferrer"
-			>LinkedIn ↗</a>
+			<a href="/rss.xml"          class="footer-link label">RSS</a>
+			<a href={SITE.social.github}   class="footer-link label" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+			<a href={SITE.social.linkedin} class="footer-link label" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
 		</nav>
 		<span class="label footer-updated">Updated {updated}</span>
 	</div>
+
 </footer>
 
 <style>
@@ -33,6 +36,20 @@ const updated = new Date().toLocaleDateString('en-GB', { month: 'short', year: '
 		margin-top: auto;
 	}
 
+	/* Disclaimer */
+	.disclaimer {
+		padding-block: var(--space-lg);
+		border-bottom: 0.5px solid var(--color-rule);
+	}
+
+	.disclaimer-text {
+		color: var(--color-text-faint);
+		line-height: 1.6;
+		max-width: 72ch;
+		letter-spacing: 0.04em; /* slightly looser for legal-ish text */
+	}
+
+	/* Main bar */
 	.footer-inner {
 		display: flex;
 		align-items: center;
@@ -54,12 +71,10 @@ const updated = new Date().toLocaleDateString('en-GB', { month: 'short', year: '
 
 	.footer-link:hover { color: var(--color-text); }
 
-	.footer-updated {
-		margin-left: auto;
-	}
+	.footer-updated { margin-left: auto; }
 
 	@media (max-width: 600px) {
-		.footer-inner { height: auto; padding-block: var(--space-md); }
+		.footer-inner   { height: auto; padding-block: var(--space-md); }
 		.footer-updated { display: none; }
 	}
 </style>
