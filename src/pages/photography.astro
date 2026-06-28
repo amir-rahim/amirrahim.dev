@@ -204,3 +204,22 @@ try {
 		.photo-grid { grid-template-columns: 1fr; }
 	}
 </style>
+
+<script>
+	function shufflePhotos() {
+		const grid = document.querySelector('.photo-grid');
+		if (!grid) return;
+
+		// Fisher-Yates shuffle on DOM children
+		const cells = [...grid.children] as HTMLElement[];
+		for (let i = cells.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[cells[i], cells[j]] = [cells[j], cells[i]];
+		}
+		// Re-append in shuffled order (appendChild moves existing nodes)
+		cells.forEach((cell) => grid.appendChild(cell));
+	}
+
+	shufflePhotos();
+	document.addEventListener('astro:page-load', shufflePhotos);
+</script>
