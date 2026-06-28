@@ -32,7 +32,8 @@ const pageTitle = title === SITE.title ? title : `${title} — ${SITE.title}`;
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="icon" href="/favicon.ico" sizes="any" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<link
 			rel="alternate"
@@ -55,14 +56,12 @@ const pageTitle = title === SITE.title ? title : `${title} — ${SITE.title}`;
 		<meta property="og:image" content={resolvedOgImage} />
 		<meta property="og:site_name" content={SITE.title} />
 
+		<!-- twitter:card tags are used by many platforms for link previews -->
 		<meta property="twitter:card" content="summary_large_image" />
 		<meta property="twitter:url" content={Astro.url} />
 		<meta property="twitter:title" content={pageTitle} />
 		<meta property="twitter:description" content={description} />
 		<meta property="twitter:image" content={resolvedOgImage} />
-		{SITE.twitterHandle && (
-			<meta name="twitter:creator" content={SITE.twitterHandle} />
-		)}
 
 		<ClientRouter />
 
@@ -71,8 +70,16 @@ const pageTitle = title === SITE.title ? title : `${title} — ${SITE.title}`;
 			(function () {
 				var stored = localStorage.getItem('theme');
 				if (stored) document.documentElement.dataset.theme = stored;
-				/* else: CSS handles via prefers-color-scheme */
 			})();
+			/*
+			 * Astro View Transitions swap the <html> element, which clears
+			 * data-theme. Re-apply from localStorage after every swap so the
+			 * theme is consistent across page navigations.
+			 */
+			document.addEventListener('astro:after-swap', function () {
+				var stored = localStorage.getItem('theme');
+				if (stored) document.documentElement.dataset.theme = stored;
+			});
 		</script>
 	</head>
 

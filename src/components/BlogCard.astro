@@ -11,8 +11,15 @@ interface Props {
 const { post, bordered = false } = Astro.props;
 const { title, description, pubDate, tags } = post.data;
 
-const readingWords = description?.split(' ').length ?? 80;
-const readMins = Math.max(1, Math.ceil(readingWords / 200));
+/* Count words in the post body (strips markdown/MDX syntax first).
+   Falls back to description word count if body is unavailable.
+   Average reading speed: 200 wpm.                                  */
+const bodyText   = post.body?.replace(/```[\s\S]*?```/g, '')   // remove code blocks
+                             .replace(/`[^`]+`/g, '')          // remove inline code
+                             .replace(/[#*_[\]()>!]/g, '')     // remove md syntax
+                          ?? description ?? '';
+const wordCount  = bodyText.trim().split(/\s+/).filter(Boolean).length || 80;
+const readMins   = Math.max(1, Math.ceil(wordCount / 200));
 ---
 
 <a

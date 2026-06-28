@@ -41,7 +41,11 @@ const navItems = [
 				type="button"
 				aria-label="Toggle colour mode"
 			>
-				<span id="theme-label" class="label"></span>
+				<!-- Rectangular sliding toggle -->
+				<span class="toggle-track" aria-hidden="true">
+					<span class="toggle-thumb" id="toggle-thumb"></span>
+				</span>
+				<span class="label" id="theme-label"></span>
 			</button>
 		</div>
 	</nav>
@@ -137,10 +141,36 @@ const navItems = [
 		cursor: pointer;
 		padding: 0;
 		color: var(--color-text-muted);
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 		transition: color var(--dur-fast) ease;
 	}
 
 	.theme-btn:hover { color: var(--color-text); }
+
+	/* ── Toggle track ── */
+	.toggle-track {
+		position: relative;
+		width: 32px;
+		height: 16px;
+		border: 0.5px solid currentColor;
+		flex-shrink: 0;
+	}
+
+	/* ── Sliding thumb ── */
+	.toggle-thumb {
+		position: absolute;
+		top: 2px;
+		left: 2px;
+		width: 10px;
+		height: 10px;
+		background: currentColor;
+		transition: left var(--dur-base) ease;
+	}
+
+	/* Thumb moves right when dark */
+	.toggle-thumb.is-dark { left: 18px; }
 
 	@media (max-width: 600px) {
 		.nav-num, .nav-sep { display: none; }
@@ -153,32 +183,37 @@ const navItems = [
 		const btn = document.getElementById('theme-toggle');
 		if (!btn) return;
 
-		/* Clone wipes any stale listeners added by previous page-load calls */
+		/* Clone wipes stale listeners from previous page-load calls */
 		const fresh = btn.cloneNode(true);
 		btn.replaceWith(fresh);
 
 		const label = fresh.querySelector('[id="theme-label"]');
+		const thumb = fresh.querySelector('[id="toggle-thumb"]') as HTMLElement | null;
 		if (!label) return;
 
-		function currentTheme() {
+		function currentTheme(): string {
 			return (
 				document.documentElement.dataset.theme ??
 				(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
 			);
 		}
 
-		function updateLabel() {
-			label.textContent = currentTheme() === 'dark' ? 'Light' : 'Dark';
+		function update() {
+			const isDark = currentTheme() === 'dark';
+			label.textContent = isDark ? 'Dark' : 'Light';
+			/* Thumb right = dark, thumb left = light */
+			thumb?.classList.toggle('is-dark', isDark);
+			fresh.setAttribute('aria-pressed', String(isDark));
 		}
 
 		fresh.addEventListener('click', () => {
 			const next = currentTheme() === 'dark' ? 'light' : 'dark';
 			document.documentElement.dataset.theme = next;
 			localStorage.setItem('theme', next);
-			updateLabel();
+			update();
 		});
 
-		updateLabel();
+		update();
 	}
 
 	initTheme();
