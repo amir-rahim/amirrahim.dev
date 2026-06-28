@@ -306,10 +306,19 @@ import { resume } from '../data/resume';
 
 	/* ── Print ── */
 	@media print {
-		.cv-header { padding-block: 0.5rem; }
-		.cv-name { font-size: 1.5rem; }
-		.doc-row { break-inside: avoid; }
-		.entry { break-inside: avoid; }
+		.cv-header {
+			padding-block: 0.75rem;
+			border-bottom: 0.5px solid #ccc;
+		}
+		.cv-name    { font-size: 18pt; letter-spacing: -0.02em; }
+		.cv-role    { font-size: 8pt; }
+		.cv-summary { font-size: 9pt; max-width: none; }
+		.entry-title { font-size: 9pt; }
+		.highlights li { font-size: 9pt; }
+		.skill-items { font-size: 9pt; }
+		.skills-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+		.doc-rows { border-color: #ccc; }
+		.row-body { padding: 0.5rem 0.75rem; }
 	}
 
 	@media (max-width: 640px) {

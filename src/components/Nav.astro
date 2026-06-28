@@ -24,6 +24,7 @@ const navItems = [
 							href={href}
 							class:list={['nav-link', { active: isActive }]}
 							aria-current={isActive ? 'page' : undefined}
+							data-astro-prefetch
 						>
 							<span class="nav-num">{num}</span>
 							<span class="nav-sep">—</span>

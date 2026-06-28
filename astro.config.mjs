@@ -9,4 +9,8 @@ export default defineConfig({
   site: 'https://amirrahim.dev',
   integrations: [mdx(), sitemap()],
   adapter: cloudflare(),
+  prefetch: {
+    defaultStrategy: 'hover',
+    prefetchAll: false,
+  },
 });
