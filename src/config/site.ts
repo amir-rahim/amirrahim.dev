@@ -15,6 +15,8 @@ export const SITE = {
 		github:   'https://github.com/amir-rahim',
 		linkedin: 'https://linkedin.com/in/amir-rahim',
 		flickr:   'https://flickr.com/photos/amir-rahim',
+		/** Flickr numeric account ID — used to fetch the public photo feed */
+		flickrNsid: '165330949@N02',
 		email:    'contact@amirrahim.dev',
 	},
 
