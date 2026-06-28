@@ -299,6 +299,24 @@ hr {
 	margin-bottom: 1.25em;
 }
 
+/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+	/* Collapse doc-row to single column — number becomes a top strip */
+	.doc-row {
+		grid-template-columns: 1fr;
+	}
+
+	.row-num {
+		border-right: none;
+		border-bottom: 0.5px solid var(--color-rule);
+		padding-block: var(--space-sm);
+	}
+
+	.row-body {
+		padding-left: var(--space-md);
+	}
+}
+
 /* ─── Print ──────────────────────────────────────────────────────────────── */
 @media print {
 	nav, footer, .no-print { display: none !important; }

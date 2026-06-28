@@ -335,8 +335,28 @@ const statement = {
 	.posts-list { border-top: 0.5px solid var(--color-rule); }
 
 	@media (max-width: 600px) {
-		.project-grid  { grid-template-columns: 1fr; }
-		.statement-line { font-size: clamp(1.6rem, 8vw, 2.5rem); }
+		/* Shorter scroll distance on mobile — less fatiguing */
+		.hero { min-height: 180vh; }
+
+		/* Push slide content down from the sticky nav */
+		.hero-slide { align-items: flex-start; padding-top: clamp(4rem, 20vh, 8rem); }
+
+		/* Tighter hero name on small screens */
+		.hero-name { font-size: clamp(2rem, 9vw, 2.75rem); margin-bottom: var(--space-sm); }
+
+		/* Stack buttons vertically on very small screens */
+		.hero-actions { flex-direction: column; align-items: flex-start; }
+		.hero-actions .btn { width: 100%; justify-content: center; }
+
+		/* Statement slide */
+		.statement-line { font-size: clamp(1.75rem, 9vw, 2.5rem); }
+		.statement-meta { padding-top: var(--space-md); }
+
+		/* Scroll hint sometimes overlaps content on short phones — move up slightly */
+		.scroll-hint { bottom: var(--space-lg); }
+
+		/* Single-column projects grid */
+		.project-grid { grid-template-columns: 1fr; }
 	}
 
 	@media (prefers-reduced-motion: reduce) {

@@ -176,6 +176,12 @@ const navItems = [
 		.nav-num, .nav-sep { display: none; }
 		.nav-link { padding-inline: var(--space-sm); }
 	}
+
+	@media (max-width: 480px) {
+		/* On small phones the toggle label overflows — keep only the track */
+		#theme-label { display: none; }
+		.nav-link { font-size: 0.625rem; }
+	}
 </style>
 
 <script>
