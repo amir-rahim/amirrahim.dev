@@ -3,7 +3,7 @@ export const SITE = {
 	title: 'Amir Rahim',
 
 	/** One-line descriptor shown in meta description and hero */
-	description: 'Engineer on a graduate rotation at UBS, working across infrastructure and platform engineering. Moving toward technical leadership — interested in systems thinking, developer experience, and building things that last.',
+	description: 'Software Engineer / Product Management | Graduate Talent Program @ UBS | Computer Science BSc @ KCL 20\'-24\'',
 
 	/** Canonical base URL (no trailing slash) */
 	url: 'https://amirrahim.dev',
