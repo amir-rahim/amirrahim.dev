@@ -3,7 +3,7 @@ export const SITE = {
 	title: 'Amir Rahim',
 
 	/** One-line descriptor shown in meta description and hero */
-	description: 'Software Engineer | Technical Product Manger | Tech Enthusiast | Blogger',
+	description: 'Engineer on a graduate rotation at UBS, working across infrastructure and platform engineering. Moving toward technical leadership — interested in systems thinking, developer experience, and building things that last.',
 
 	/** Canonical base URL (no trailing slash) */
 	url: 'https://amirrahim.dev',
@@ -11,13 +11,11 @@ export const SITE = {
 	/** Used in OG tags and RSS */
 	author: 'Amir Rahim',
 
-	/** Twitter/X handle including @ — or set to '' to omit */
-	twitterHandle: '',
-
 	social: {
-		github: 'https://github.com/amir-rahim',
+		github:   'https://github.com/amir-rahim',
 		linkedin: 'https://linkedin.com/in/amir-rahim',
-		email: 'contact@amirrahim.dev',
+		flickr:   'https://flickr.com/photos/amir-rahim',
+		email:    'contact@amirrahim.dev',
 	},
 
 	/** Navigation links (in order) */
