@@ -16,8 +16,9 @@ type Props = CollectionEntry<'blog'>;
 
 const post = Astro.props;
 const { Content } = await render(post);
+const ogImage = new URL(`/og/${post.id}.png`, Astro.site).toString();
 ---
 
-<BlogPost {...post.data}>
+<BlogPost {...post.data} ogImage={ogImage}>
 	<Content />
 </BlogPost>

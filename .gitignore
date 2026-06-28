@@ -1,6 +1,7 @@
 # Build output
 dist/
 .astro/
+public/og/
 
 # Dependencies
 node_modules/
