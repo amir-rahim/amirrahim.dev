@@ -138,7 +138,7 @@ export const resume: ResumeData = {
 			institution: 'William Perkin Church of England High School',
 			location: 'London, United Kingdom',
 			graduationYear: '2020',
-			notes: 'Acheived A*AA.',
+			notes: 'Achieved A*AA.',
 		},
 	],
 
