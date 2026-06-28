@@ -13,7 +13,7 @@ const navItems = [
 
 <header class="site-header">
 	<nav class="page-wrap nav-inner" aria-label="Main navigation">
-		<a href="/" class="nav-logo" aria-label={`${SITE.title} — home`}>AR.</a>
+		<a href="/" class="nav-logo" aria-label="AR. — home">AR.</a>
 
 		<ul class="nav-links" role="list">
 			{navItems.map(({ label, href, num }) => {
@@ -40,7 +40,6 @@ const navItems = [
 				class="theme-btn"
 				id="theme-toggle"
 				type="button"
-				aria-label="Toggle colour mode"
 			>
 				<!-- Rectangular sliding toggle -->
 				<span class="toggle-track" aria-hidden="true">
@@ -202,9 +201,9 @@ const navItems = [
 		function update() {
 			const isDark = currentTheme() === 'dark';
 			label.textContent = isDark ? 'Dark' : 'Light';
-			/* Thumb right = dark, thumb left = light */
 			thumb?.classList.toggle('is-dark', isDark);
 			fresh.setAttribute('aria-pressed', String(isDark));
+			fresh.setAttribute('aria-label', isDark ? 'Dark — switch to light mode' : 'Light — switch to dark mode');
 		}
 
 		fresh.addEventListener('click', () => {
