@@ -13,8 +13,8 @@ import { SITE } from '../config/site';
 			<p class="label header-label">Get in touch</p>
 			<h1 class="page-title">Contact</h1>
 			<p class="page-desc">
-				The best way to reach me is by email. I'm also reachable on LinkedIn
-				and GitHub.
+				The best way to reach me is by email. I'm also on LinkedIn, GitHub,
+				and Flickr for photography.
 			</p>
 		</header>
 
@@ -62,6 +62,22 @@ import { SITE } from '../config/site';
 						rel="noopener noreferrer"
 					>
 						{SITE.social.github.replace('https://', '')} ↗
+					</a>
+				</div>
+			</div>
+
+			<!-- Flickr -->
+			<div class="doc-row reveal">
+				<span class="row-num">04</span>
+				<div class="row-body">
+					<p class="label row-label">Flickr</p>
+					<a
+						href={SITE.social.flickr}
+						class="contact-link"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						{SITE.social.flickr.replace('https://', '')} ↗
 					</a>
 				</div>
 			</div>

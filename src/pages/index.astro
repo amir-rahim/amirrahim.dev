@@ -435,18 +435,26 @@ const statement = {
 		if (!ctx) return;
 		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-		const CELL      = 18;
-		const CHARS     = ['0','1','0','1','0','1','+','·','×','-','0','1'];
-		const BASE_FILL = 0.04;
-		const FPS       = 22;
-		const INTERVAL  = 1000 / FPS;
+		/* ── Constants ── */
+		const CELL         = 18;
+		const CHARS        = ['0','1','0','1','0','1','+','·','×','-','0','1'];
+		const BASE_FILL    = 0.04;
+		const FPS          = 22;
+		const INTERVAL     = 1000 / FPS;
+		const HOVER_RADIUS = 160;          /* px — flashlight radius              */
+		const RING_HALF    = CELL * 4;     /* half-width of each ripple ring      */
+		const RIPPLE_SPEED = 12;           /* px per tick                         */
+		const RIPPLE_DECAY = 0.018;        /* life lost per tick (~2.3s to fade)  */
+		const MAX_RIPPLES  = 8;
+		const INTERACT_OP  = 0.92;         /* max opacity for interactive effects */
 
 		function getMaxOpacity(): number {
-			const theme      = document.documentElement.dataset.theme;
-			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-			return (theme === 'dark' || (!theme && prefersDark)) ? 0.20 : 0.55;
+			const theme = document.documentElement.dataset.theme;
+			const dark  = window.matchMedia('(prefers-color-scheme: dark)').matches;
+			return (theme === 'dark' || (!theme && dark)) ? 0.20 : 0.55;
 		}
 
+		/* ── Types ── */
 		interface Cell {
 			x: number; y: number;
 			char: string;
@@ -455,11 +463,15 @@ const statement = {
 			speed: number;
 			ticksLeft: number;
 		}
+		interface Ripple { x: number; y: number; radius: number; life: number; }
 
-		let cells: Cell[] = [];
-		let raf = 0;
-		let last = 0;
+		/* ── State ── */
+		let cells:   Cell[]   = [];
+		let ripples: Ripple[] = [];
+		let mouseX = -9999, mouseY = -9999;
+		let raf = 0, last = 0;
 
+		/* ── Helpers ── */
 		function getCssColor(prop: string) {
 			return getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
 		}
@@ -487,9 +499,9 @@ const statement = {
 			}
 		}
 
+		/* ── Natural cell animation ── */
 		function tickCells() {
 			const progress    = (window as any).__heroProgress ?? 0;
-			/* Density peaks in the blackout window (both slides hidden ~0.48-0.55) */
 			const spike       = 1 - Math.abs(progress - 0.515) / 0.515;
 			const densityMult = 1 + Math.pow(spike, 2) * 7;
 			const wantActive  = Math.ceil(cells.length * BASE_FILL * densityMult);
@@ -497,11 +509,8 @@ const statement = {
 
 			for (const cell of cells) {
 				cell.opacity += (cell.target - cell.opacity) * cell.speed;
-
 				if (cell.ticksLeft > 0) { cell.ticksLeft--; continue; }
-
 				cell.opacity = cell.target;
-
 				if (cell.target > 0) {
 					cell.target    = 0;
 					cell.ticksLeft = Math.floor(FPS * (1 + Math.random() * 6));
@@ -517,30 +526,91 @@ const statement = {
 			}
 		}
 
+		/* ── Ripple tick ── */
+		function tickRipples() {
+			for (const rip of ripples) {
+				rip.radius += RIPPLE_SPEED;
+				rip.life   -= RIPPLE_DECAY;
+			}
+			const diag = Math.hypot(canvas.width, canvas.height);
+			ripples = ripples.filter(r => r.life > 0 && r.radius < diag);
+		}
+
+		/* ── Draw — natural + hover overlay + ripple overlay ── */
 		function draw() {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			const color = getCssColor('--color-text');
+			const maxOp = getMaxOpacity();
 			ctx.font = `${Math.round(CELL * 0.62)}px 'JetBrains Mono', monospace`;
 			ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
 
 			for (const cell of cells) {
-				const op = Math.abs(cell.opacity);
+				let op = Math.abs(cell.opacity);
+				const cx = cell.x + CELL / 2;
+				const cy = cell.y + CELL / 2;
+
+				/* Hover: ease-in falloff so the centre is very bright */
+				const hDist = Math.hypot(cx - mouseX, cy - mouseY);
+				if (hDist < HOVER_RADIUS) {
+					const factor = 1 - hDist / HOVER_RADIUS;
+					const eased  = factor * factor; /* quadratic — dense at centre */
+					op = Math.max(op * (1 + eased * 6), eased * INTERACT_OP);
+				}
+
+				/* Ripple: wide bright ring at each wavefront */
+				for (const rip of ripples) {
+					const diff = Math.abs(Math.hypot(cx - rip.x, cy - rip.y) - rip.radius);
+					if (diff < RING_HALF) {
+						const intensity = (1 - diff / RING_HALF) * rip.life;
+						op = Math.max(op, intensity * INTERACT_OP);
+					}
+				}
+
+				op = Math.min(INTERACT_OP, op);
 				if (op < 0.005) continue;
 				ctx.globalAlpha = op;
 				ctx.fillStyle   = color;
-				ctx.fillText(cell.char, cell.x + CELL / 2, cell.y + CELL / 2);
+				ctx.fillText(cell.char, cx, cy);
 			}
 			ctx.globalAlpha = 1;
 		}
 
+		/* ── Loop ── */
 		function loop(ts: number) {
 			raf = requestAnimationFrame(loop);
 			if (ts - last < INTERVAL) return;
 			last = ts;
 			tickCells();
+			tickRipples();
 			draw();
 		}
 
+		/*
+		 * Listen on the sticky container, NOT the canvas.
+		 * The canvas sits behind the slide divs, so pointer events hit
+		 * the slides first and never reach the canvas. The container
+		 * receives bubbled events from all children, and we translate
+		 * clientX/Y to canvas-local coordinates via getBoundingClientRect.
+		 */
+		const container = canvas.parentElement ?? canvas;
+
+		function onMouseMove(e: MouseEvent) {
+			const rect = canvas.getBoundingClientRect();
+			mouseX = e.clientX - rect.left;
+			mouseY = e.clientY - rect.top;
+		}
+		function onMouseLeave() { mouseX = -9999; mouseY = -9999; }
+		function onClick(e: MouseEvent) {
+			if (ripples.length >= MAX_RIPPLES) ripples.shift();
+			const rect = canvas.getBoundingClientRect();
+			ripples.push({ x: e.clientX - rect.left, y: e.clientY - rect.top, radius: 0, life: 1 });
+		}
+
+		container.addEventListener('mousemove',  onMouseMove);
+		container.addEventListener('mouseleave', onMouseLeave);
+		container.addEventListener('click',      onClick);
+
+		/* ── Boot ── */
 		const ro = new ResizeObserver(resize);
 		ro.observe(canvas);
 		resize();
@@ -549,6 +619,9 @@ const statement = {
 		const cleanup = () => {
 			cancelAnimationFrame(raf);
 			ro.disconnect();
+			container.removeEventListener('mousemove',  onMouseMove);
+			container.removeEventListener('mouseleave', onMouseLeave);
+			container.removeEventListener('click',      onClick);
 			document.removeEventListener('astro:before-swap', cleanup);
 		};
 		document.addEventListener('astro:before-swap', cleanup);
