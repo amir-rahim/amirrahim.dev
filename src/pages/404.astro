@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404 — Page Not Found" noindex={true}>
+	<div class="page-wrap">
+
+		<header class="page-header">
+			<p class="label header-label">Error 404</p>
+			<h1 class="page-title">Not found.</h1>
+			<p class="page-desc">
+				This page doesn't exist or has been moved.
+			</p>
+			<a href="/" class="btn" style="margin-top: var(--space-xl); display: inline-block;">
+				← Back to home
+			</a>
+		</header>
+
+	</div>
+</BaseLayout>
+
+<style>
+	.page-header {
+		padding-top: var(--space-2xl);
+		padding-bottom: var(--space-xl);
+		border-bottom: 0.5px solid var(--color-rule);
+	}
+
+	.header-label { margin-bottom: 0.4em; }
+
+	.page-title {
+		font-size: var(--text-hero);
+		letter-spacing: -0.03em;
+		margin-bottom: var(--space-sm);
+	}
+
+	.page-desc {
+		font-size: var(--text-body);
+		color: var(--color-text-muted);
+		max-width: 42ch;
+	}
+</style>
