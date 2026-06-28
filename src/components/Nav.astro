@@ -15,6 +15,7 @@ const navItems = [
 	<nav class="page-wrap nav-inner" aria-label="Main navigation">
 		<a href="/" class="nav-logo" aria-label="AR. — home">AR.</a>
 
+		<!-- Desktop nav links -->
 		<ul class="nav-links" role="list">
 			{navItems.map(({ label, href, num }) => {
 				const isActive = currentPath.startsWith(href);
@@ -36,22 +37,54 @@ const navItems = [
 		</ul>
 
 		<div class="nav-end">
-			<button
-				class="theme-btn"
-				id="theme-toggle"
-				type="button"
-			>
-				<!-- Rectangular sliding toggle -->
+			<!-- Theme toggle (always visible) -->
+			<button class="theme-btn" id="theme-toggle" type="button">
 				<span class="toggle-track" aria-hidden="true">
 					<span class="toggle-thumb" id="toggle-thumb"></span>
 				</span>
 				<span class="label" id="theme-label"></span>
 			</button>
+
+			<!-- Mobile menu button -->
+			<button
+				class="menu-btn label"
+				id="menu-btn"
+				type="button"
+				aria-expanded="false"
+				aria-controls="nav-drawer"
+				aria-label="Open navigation menu"
+			>
+				<span id="menu-label">Menu</span>
+			</button>
 		</div>
 	</nav>
 </header>
 
+<!-- Mobile full-screen drawer (sits below the sticky header) -->
+<div class="nav-drawer" id="nav-drawer" aria-hidden="true" aria-label="Navigation menu">
+	<ul class="drawer-list" role="list">
+		{navItems.map(({ label, href, num }) => {
+			const isActive = currentPath.startsWith(href);
+			return (
+				<li>
+					<a
+						href={href}
+						class:list={['drawer-link', { active: isActive }]}
+						aria-current={isActive ? 'page' : undefined}
+						data-astro-prefetch
+					>
+						<span class="drawer-num">{num}</span>
+						<span class="drawer-sep">—</span>
+						<span class="drawer-label">{label}</span>
+					</a>
+				</li>
+			);
+		})}
+	</ul>
+</div>
+
 <style>
+	/* ── Header shell ── */
 	.site-header {
 		position: sticky;
 		top: 0;
@@ -68,7 +101,7 @@ const navItems = [
 		gap: var(--space-xl);
 	}
 
-	/* "AR." — bold monospace logo */
+	/* ── Logo ── */
 	.nav-logo {
 		font-family: var(--font-mono);
 		font-size: 0.8125rem;
@@ -78,6 +111,7 @@ const navItems = [
 		flex-shrink: 0;
 	}
 
+	/* ── Desktop nav links ── */
 	.nav-links {
 		display: flex;
 		list-style: none;
@@ -101,11 +135,10 @@ const navItems = [
 		transition: color var(--dur-fast) ease;
 	}
 
-	/* underline slides in from left */
 	.nav-link::after {
 		content: '';
 		position: absolute;
-		bottom: -1px; /* sits on the bottom border */
+		bottom: -1px;
 		left: var(--space-md);
 		right: var(--space-md);
 		height: 1.5px;
@@ -121,20 +154,19 @@ const navItems = [
 	.nav-link:hover::after,
 	.nav-link.active::after { transform: scaleX(1); }
 
-	.nav-num {
-		color: var(--color-text-faint);
-		font-size: var(--text-label-sm);
-	}
+	.nav-num { color: var(--color-text-faint); font-size: var(--text-label-sm); }
+	.nav-sep { color: var(--color-text-faint); }
 
-	.nav-sep {
-		color: var(--color-text-faint);
-	}
-
+	/* ── Right-side controls ── */
 	.nav-end {
 		margin-left: auto;
 		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		gap: var(--space-md);
 	}
 
+	/* ── Theme toggle ── */
 	.theme-btn {
 		background: none;
 		border: none;
@@ -149,7 +181,6 @@ const navItems = [
 
 	.theme-btn:hover { color: var(--color-text); }
 
-	/* ── Toggle track ── */
 	.toggle-track {
 		position: relative;
 		width: 32px;
@@ -158,7 +189,6 @@ const navItems = [
 		flex-shrink: 0;
 	}
 
-	/* ── Sliding thumb ── */
 	.toggle-thumb {
 		position: absolute;
 		top: 2px;
@@ -169,28 +199,97 @@ const navItems = [
 		transition: left var(--dur-base) ease;
 	}
 
-	/* Thumb moves right when dark */
 	.toggle-thumb.is-dark { left: 18px; }
 
-	@media (max-width: 600px) {
-		.nav-num, .nav-sep { display: none; }
-		.nav-link { padding-inline: var(--space-sm); }
+	/* ── Mobile menu button (hidden on desktop) ── */
+	.menu-btn {
+		display: none;
+		background: none;
+		border: none;
+		cursor: pointer;
+		padding: 0;
+		color: var(--color-text-muted);
+		transition: color var(--dur-fast) ease;
 	}
 
-	@media (max-width: 480px) {
-		/* On small phones the toggle label overflows — keep only the track */
+	.menu-btn:hover    { color: var(--color-text); }
+	.menu-btn.is-open  { color: var(--color-text); }
+
+	/* ── Full-screen drawer ── */
+	.nav-drawer {
+		position: fixed;
+		/* Sits directly below the sticky nav (height 2.875rem + 2 × 1.5px borders) */
+		top: calc(2.875rem + 3px);
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: var(--color-bg);
+		border-top: 0.5px solid var(--color-rule);
+		z-index: 99;
+		overflow-y: auto;
+		/* Slide up when hidden */
+		transform: translateY(-100%);
+		visibility: hidden;
+		transition: transform var(--dur-base) ease, visibility 0s var(--dur-base);
+	}
+
+	.nav-drawer.is-open {
+		transform: translateY(0);
+		visibility: visible;
+		transition: transform var(--dur-base) ease;
+	}
+
+	.drawer-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.drawer-link {
+		display: flex;
+		align-items: center;
+		gap: 0.75em;
+		padding: var(--space-lg) var(--gutter-side);
+		border-bottom: 0.5px solid var(--color-rule);
+		font-family: var(--font-mono);
+		font-size: clamp(1.25rem, 5vw, 1.75rem);
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: var(--color-text-muted);
+		text-decoration: none;
+		transition: color var(--dur-fast) ease, background var(--dur-fast) ease;
+	}
+
+	.drawer-link:hover,
+	.drawer-link.active { color: var(--color-text); }
+
+	.drawer-link.active { background: var(--color-surface); }
+
+	.drawer-num { color: var(--color-text-faint); font-size: var(--text-label-sm); }
+	.drawer-sep { color: var(--color-text-faint); }
+
+	/* ── Breakpoints ── */
+	@media (max-width: 640px) {
+		.nav-links   { display: none; }
+		.menu-btn    { display: flex; }
+		/* Hide toggle label on mobile — track alone suffices */
 		#theme-label { display: none; }
-		.nav-link { font-size: 0.625rem; }
+		.nav-inner   { gap: var(--space-md); }
+	}
+
+	@media (min-width: 641px) {
+		/* Always ensure drawer is hidden on desktop even if JS state got stuck */
+		.nav-drawer { display: none !important; }
 	}
 </style>
 
 <script>
+	/* ── Theme toggle ─────────────────────────────────────────────────── */
 	function initTheme() {
 		const btn = document.getElementById('theme-toggle');
 		if (!btn) return;
 
-		/* Clone wipes stale listeners from previous page-load calls */
-		const fresh = btn.cloneNode(true);
+		const fresh = btn.cloneNode(true) as HTMLElement;
 		btn.replaceWith(fresh);
 
 		const label = fresh.querySelector('[id="theme-label"]');
@@ -222,6 +321,63 @@ const navItems = [
 		update();
 	}
 
+	/* ── Mobile menu ──────────────────────────────────────────────────── */
+	function initMenu() {
+		const drawer = document.getElementById('nav-drawer') as HTMLElement | null;
+		if (!drawer) return;
+
+		/* Always close on page navigation */
+		closeDrawer(drawer, null, null);
+
+		const btn = document.getElementById('menu-btn');
+		if (!btn) return;
+
+		const fresh = btn.cloneNode(true) as HTMLElement;
+		btn.replaceWith(fresh);
+
+		const label = fresh.querySelector('#menu-label') as HTMLElement | null;
+
+		function openDrawer() {
+			drawer!.classList.add('is-open');
+			drawer!.setAttribute('aria-hidden', 'false');
+			fresh.classList.add('is-open');
+			fresh.setAttribute('aria-expanded', 'true');
+			fresh.setAttribute('aria-label', 'Close navigation menu');
+			if (label) label.textContent = 'Close';
+			document.body.style.overflow = 'hidden';
+		}
+
+		function close() {
+			closeDrawer(drawer, fresh, label);
+		}
+
+		fresh.addEventListener('click', () => {
+			drawer!.classList.contains('is-open') ? close() : openDrawer();
+		});
+
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && drawer!.classList.contains('is-open')) close();
+		});
+	}
+
+	function closeDrawer(
+		drawer: HTMLElement | null,
+		btn: HTMLElement | null,
+		label: HTMLElement | null,
+	) {
+		drawer?.classList.remove('is-open');
+		drawer?.setAttribute('aria-hidden', 'true');
+		btn?.classList.remove('is-open');
+		btn?.setAttribute('aria-expanded', 'false');
+		btn?.setAttribute('aria-label', 'Open navigation menu');
+		if (label) label.textContent = 'Menu';
+		document.body.style.overflow = '';
+	}
+
 	initTheme();
-	document.addEventListener('astro:page-load', initTheme);
+	initMenu();
+	document.addEventListener('astro:page-load', () => {
+		initTheme();
+		initMenu();
+	});
 </script>
