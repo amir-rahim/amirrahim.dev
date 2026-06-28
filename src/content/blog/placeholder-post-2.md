@@ -5,7 +5,7 @@ pubDate: 2026-05-15
 tags:
   - leadership
   - career
-draft: false
+draft: true
 ---
 
 PLACEHOLDER — Write your second post here.

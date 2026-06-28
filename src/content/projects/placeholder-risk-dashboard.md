@@ -9,7 +9,7 @@ tech:
   - "PLACEHOLDER_TECH"
   - "PLACEHOLDER_TECH"
 repo: "https://github.com/PLACEHOLDER/PLACEHOLDER"
-draft: false
+draft: true
 ---
 
 PLACEHOLDER — Replace with your actual project details.

@@ -7,7 +7,7 @@ tech:
   - "PLACEHOLDER_LANG"
   - "PLACEHOLDER_TECH"
   - "PLACEHOLDER_TECH"
-draft: false
+draft: true
 ---
 
 PLACEHOLDER — Replace with your actual project details.

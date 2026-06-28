@@ -10,7 +10,7 @@ tech:
   - "PLACEHOLDER_TECH"
 url: "https://placeholder.example.com"
 repo: "https://github.com/PLACEHOLDER/PLACEHOLDER"
-draft: false
+draft: true
 ---
 
 PLACEHOLDER — Add a longer description here if you want one. This file drives the project card.
